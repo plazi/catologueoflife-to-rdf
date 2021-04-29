@@ -1,0 +1,17 @@
+PREFIX dwc: <http://rs.tdwg.org/dwc/terms/>
+
+CONSTRUCT {
+  ?taxon 
+     dwc:taxonName ?dwc_scientificName;
+     dwc:parent ?parent;
+     dwc:rank ?dwc_taxonRank;
+     dwc:genus ?gbif_genericName;
+     dwc:species ?dwc_specificEpithet;
+     dwc:infraspecificEpithet ?dwc_infraspecificEpithet.
+
+
+
+} WHERE {
+  bind(iri(concat("https://www.catalogueoflife.org/data/taxon/",?dwc_taxonID)) as ?taxon)
+  bind(iri(concat("https://www.catalogueoflife.org/data/taxon/",?dwc_parentNameUsageID)) as ?parent)
+}
