@@ -1,0 +1,4 @@
+INSERT {?subTaxon <http://rs.tdwg.org/dwc/terms/ancestor> ?taxon} 
+WHERE { 
+   ?subTaxon <http://rs.tdwg.org/dwc/terms/parent>* ?taxon .
+}
