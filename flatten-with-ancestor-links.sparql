@@ -1,0 +1,36 @@
+PREFIX franzOption_memoryLimit: <franz:128g>
+prefix dwc:  <http://rs.tdwg.org/dwc/terms/> 
+
+SELECT ?taxon ?genusName ?genericName ?speciesName 
+?familyName ?orderName ?className ?phylumName 
+?kingdomName WHERE {
+  ?taxon 
+  	dwc:rank "SPECIES";
+    dwc:ancestor ?genus;
+    dwc:taxonName ?speciesName;
+    dwc:genus ?genericName.
+  
+  ?genus dwc:taxonName ?genusName;
+          dwc:ancestor ?family;
+          dwc:rank "GENUS".
+  
+  ?family dwc:taxonName ?familyName;
+          dwc:ancestor ?order;
+          dwc:rank "FAMILY".
+  
+  ?order dwc:taxonName ?orderName;
+         dwc:ancestor ?class;
+          dwc:rank "ORDER".
+  
+  ?class dwc:taxonName ?className;
+         dwc:ancestor ?phylum;
+          dwc:rank "CLASS".
+  
+  ?phylum dwc:taxonName ?phylumName;
+          dwc:ancestor ?kingdom;
+          dwc:rank "PHYLUM".
+  
+  ?kingdom dwc:taxonName ?kingdomName;
+          dwc:rank "KINGDOM".
+
+}
