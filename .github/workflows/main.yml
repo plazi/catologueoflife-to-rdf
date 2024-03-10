@@ -14,11 +14,11 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install default-jre wget git curl
+          DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC sudo apt-get -y install default-jre wget git curl
           wget https://github.com/tarql/tarql/releases/download/v1.2/tarql-1.2.tar.gz
-          cd /usr/local/lib/ && tar xzf /tarql-1.2.tar.gz && rm /tarql-1.2.tar.gz
-          chmod a+x /usr/local/lib/tarql-1.2/bin/tarql
-          ln -s /usr/local/lib/tarql-1.2/bin/tarql /usr/local/bin/
+          cd /usr/local/lib/ && sudo tar xzf /tarql-1.2.tar.gz && rm /tarql-1.2.tar.gz
+          sudo chmod a+x /usr/local/lib/tarql-1.2/bin/tarql
+          sudo ln -s /usr/local/lib/tarql-1.2/bin/tarql /usr/local/bin/
           
       - name: Get and conver
         run: |
