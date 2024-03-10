@@ -1,0 +1,34 @@
+name: col
+
+on: workflow_dispatch 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install default-jre wget git curl
+          wget https://github.com/tarql/tarql/releases/download/v1.2/tarql-1.2.tar.gz
+          cd /usr/local/lib/ && tar xzf /tarql-1.2.tar.gz && rm /tarql-1.2.tar.gz
+          chmod a+x /usr/local/lib/tarql-1.2/bin/tarql
+          ln -s /usr/local/lib/tarql-1.2/bin/tarql /usr/local/bin/
+          
+      - name: Get and conver
+        run: |
+          wget "https://api.checklistbank.org/dataset/3LR/export.zip?format=DwCA&extended=true" -O dwca.zip
+          unzip dwca.zip Taxon.tsv
+          tarql --tabs query.sparql Taxon.tsv > col.ttl
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ github.workspace }}/col.ttl
+          generate_release_notes: true
+          tag_name: ${{ github.ref_name }}
