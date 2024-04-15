@@ -1,5 +1,7 @@
 # CatalogueOfLife to RDF converter
 
+> Usage: Whenever a tag is pushed or a release is created, the gihub action will run and attach a gzipped col.ttl.gz file to the release.
+
 - query.sparl is meant to be used with tarql to generate RDF from the `Taxon.tsv` file contained in the COL DWC archive
 
 ```
