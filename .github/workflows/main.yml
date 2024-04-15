@@ -20,15 +20,16 @@ jobs:
           sudo chmod a+x /usr/local/lib/tarql-1.2/bin/tarql
           sudo ln -s /usr/local/lib/tarql-1.2/bin/tarql /usr/local/bin/
           
-      - name: Get and conver
+      - name: Get and convert
         run: |
           wget "https://api.checklistbank.org/dataset/3LR/export.zip?format=DwCA&extended=true" -O dwca.zip
           unzip dwca.zip Taxon.tsv
           tarql --tabs query.sparql Taxon.tsv > col.ttl
+          gzip -k col.ttl
 
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          files: ${{ github.workspace }}/col.ttl
+          files: ${{ github.workspace }}/col.ttl.gz
           generate_release_notes: true
           tag_name: ${{ github.ref_name }}
