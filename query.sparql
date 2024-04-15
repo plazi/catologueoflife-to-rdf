@@ -4,14 +4,19 @@ CONSTRUCT {
   ?taxon 
      dwc:taxonName ?dwc_scientificName;
      dwc:parent ?parent;
+     dwc:acceptedName ?acceptedName;
+     dwc:originalName ?originalName;
      dwc:rank ?dwc_taxonRank;
      dwc:genus ?gbif_genericName;
+     dwc:infragenericEpithet ?dwc_infragenericEpithet;
      dwc:species ?dwc_specificEpithet;
-     dwc:infraspecificEpithet ?dwc_infraspecificEpithet.
-
-
-
+     dwc:infraspecificEpithet ?dwc_infraspecificEpithet;
+     dwc:cultivarEpithet ?dwc_cultivarEpithet;
+     dwc:taxonomicStatus ?dwc_taxonomicStatus;
+     dwc:scientificNameAuthorship	?dwc_scientificNameAuthorship.
 } WHERE {
   bind(iri(concat("https://www.catalogueoflife.org/data/taxon/",?dwc_taxonID)) as ?taxon)
   bind(iri(concat("https://www.catalogueoflife.org/data/taxon/",?dwc_parentNameUsageID)) as ?parent)
+  bind(iri(concat("https://www.catalogueoflife.org/data/taxon/",?dwc_acceptedNameUsageID)) as ?acceptedName)
+  bind(iri(concat("https://www.catalogueoflife.org/data/taxon/",?dwc_originalNameUsageID)) as ?originalName)
 }
