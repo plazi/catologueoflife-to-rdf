@@ -1,9 +1,7 @@
 name: col
 
-on:
-  push:
-    tags:
-      - "v*.*.*"
+on: workflow_dispatch 
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -34,3 +32,4 @@ jobs:
         with:
           files: ${{ github.workspace }}/col.ttl.gz
           generate_release_notes: true
+          tag_name: ${{ github.ref_name }}
