@@ -1,4 +1,6 @@
 PREFIX dwc: <http://rs.tdwg.org/dwc/terms/>
+PREFIX col: <https://terms.catalogueoflife.org/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
 
 CONSTRUCT {
   ?taxon 
@@ -8,12 +10,31 @@ CONSTRUCT {
      dwc:originalName ?originalName;
      dwc:rank ?dwc_taxonRank;
      dwc:genus ?gbif_genericName;
-     dwc:infragenericEpithet ?dwc_infragenericEpithet;
      dwc:species ?dwc_specificEpithet;
-     dwc:infraspecificEpithet ?dwc_infraspecificEpithet;
-     dwc:cultivarEpithet ?dwc_cultivarEpithet;
-     dwc:taxonomicStatus ?dwc_taxonomicStatus;
-     dwc:scientificNameAuthorship	?dwc_scientificNameAuthorship.
+
+      # All tsv columns in order:
+      dwc:taxonID ?dwc_taxonID ;
+      dwc:parentNameUsageID ?dwc_parentNameUsageID ;
+      dwc:acceptedNameUsageID ?dwc_acceptedNameUsageID ;
+      dwc:originalNameUsageID ?dwc_originalNameUsageID ;
+      dwc:scientificNameID ?dwc_scientificNameID ;
+      dwc:datasetID ?dwc_datasetID ;
+      dwc:taxonomicStatus ?dwc_taxonomicStatus ;
+      dwc:taxonRank ?dwc_taxonRank ;
+      dwc:scientificName ?dwc_scientificName ;
+      dwc:scientificNameAuthorship ?dwc_scientificNameAuthorship ;
+      col:notho ?col_notho ;
+      dwc:genericName ?dwc_genericName ;
+      dwc:infragenericEpithet ?dwc_infragenericEpithet ;
+      dwc:specificEpithet ?dwc_specificEpithet ;
+      dwc:infraspecificEpithet ?dwc_infraspecificEpithet ;
+      dwc:cultivarEpithet ?dwc_cultivarEpithet ;
+      dwc:nameAccordingTo ?dwc_nameAccordingTo ;
+      dwc:namePublishedIn ?dwc_namePublishedIn ;
+      dwc:nomenclaturalCode ?dwc_nomenclaturalCode ;
+      dwc:nomenclaturalStatus ?dwc_nomenclaturalStatus ;
+      dwc:taxonRemarks ?dwc_taxonRemarks ;
+      dcterms:references ?dcterms_references ;
 } WHERE {
   bind(iri(concat("https://www.catalogueoflife.org/data/taxon/",?dwc_taxonID)) as ?taxon)
   bind(iri(concat("https://www.catalogueoflife.org/data/taxon/",?dwc_parentNameUsageID)) as ?parent)
