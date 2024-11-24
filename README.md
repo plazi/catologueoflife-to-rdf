@@ -1,5 +1,10 @@
 # CatalogueOfLife to RDF converter
 
+## Goal
+To work towards a version of Synospecies being as inclusive as possible. For this, all names available in ChecklistBank will be included
+
+## Approach
+
 > Usage: Whenever a tag is pushed or a release is created, the gihub action will run and attach a gzipped col.ttl.gz file to the release.
 
 - query.sparl is meant to be used with tarql to generate RDF from the `Taxon.tsv` file contained in the COL DWC archive
