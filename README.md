@@ -1,9 +1,10 @@
 # CatalogueOfLife to RDF converter
 
 ## Goal
-To work towards a version of Synospecies being as inclusive as possible. For this, all names available in ChecklistBank will be included
+To work towards a version of Synospecies being as inclusive as possible by including the taxonomic names available in [Checklistbank](https://www.checklistbank.org/). 
 
 ## Approach
+To include the taxonomic names in ChecklistBank, their [API](https://api.checklistbank.org/) is used to download the names which then are conveted into RDF
 
 > Usage: Whenever a tag is pushed or a release is created, the gihub action will run and attach a gzipped col.ttl.gz file to the release.
 
