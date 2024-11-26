@@ -24,12 +24,16 @@ jobs:
         run: |
           wget "https://api.checklistbank.org/dataset/3LR/export.zip?format=DwCA&extended=true" -O dwca.zip
           unzip dwca.zip Taxon.tsv
-          tarql --tabs query.sparql Taxon.tsv > col.ttl
-          gzip -k col.ttl
-
+          tarql --ntriples --tabs query.sparql Taxon.tsv > col.nt
+          gzip -k col.nt
+  
+      # Using `tarql --ntriples` to emit ntriples directly.
+      # This is a workaround to our lindas-upload-cronjob failing to convert a ttl file this large using rapper.
+      # (It fails with an inexplicable `unexpected $end` in the middle of the file)
+          
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          files: ${{ github.workspace }}/col.ttl.gz
+          files: ${{ github.workspace }}/col.nt.gz
           generate_release_notes: true
           tag_name: ${{ github.ref_name }}
