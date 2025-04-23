@@ -4,30 +4,30 @@ PREFIX dcterms: <http://purl.org/dc/terms/>
 
 CONSTRUCT {
   ?taxon 
-     dwc:taxonName ?dwc_scientificName;
-     dwc:parent ?parent;
-     dwc:acceptedName ?acceptedName;
-     dwc:originalName ?originalName;
-     dwc:rank ?dwc_taxonRank;
-     dwc:genus ?gbif_genericName;
-     dwc:species ?dwc_specificEpithet;
+      # dwc:taxonName ?dwc_scientificName;
+      dwc:parent ?parent;                                           # Used by Synospecies
+      dwc:acceptedName ?acceptedName;                               # Used by Synospecies
+      dwc:originalName ?originalName;
+      # dwc:rank ?dwc_taxonRank;
+      # dwc:genus ?gbif_genericName;
+      # dwc:species ?dwc_specificEpithet;
 
-      # All tsv columns in order:
-      dwc:taxonID ?dwc_taxonID ;
-      dwc:parentNameUsageID ?dwc_parentNameUsageID ;
-      dwc:acceptedNameUsageID ?dwc_acceptedNameUsageID ;
-      dwc:originalNameUsageID ?dwc_originalNameUsageID ;
-      dwc:scientificNameID ?dwc_scientificNameID ;
+      ## All tsv columns in order:
+      # dwc:taxonID ?dwc_taxonID ;
+      # dwc:parentNameUsageID ?dwc_parentNameUsageID ;
+      # dwc:acceptedNameUsageID ?dwc_acceptedNameUsageID ;
+      # dwc:originalNameUsageID ?dwc_originalNameUsageID ;
+      # dwc:scientificNameID ?dwc_scientificNameID ;
       dwc:datasetID ?dwc_datasetID ;
-      dwc:taxonomicStatus ?dwc_taxonomicStatus ;
-      dwc:taxonRank ?dwc_taxonRank ;
-      dwc:scientificName ?dwc_scientificName ;
-      dwc:scientificNameAuthorship ?dwc_scientificNameAuthorship ;
+      dwc:taxonomicStatus ?dwc_taxonomicStatus ;                    # Used by Synospecies
+      dwc:taxonRank ?dwc_taxonRank ;                                # Used by Synospecies
+      dwc:scientificName ?dwc_scientificName ;                      # Used by Synospecies
+      dwc:scientificNameAuthorship ?dwc_scientificNameAuthorship ;  # Used by Synospecies
       col:notho ?col_notho ;
-      dwc:genericName ?dwc_genericName ;
-      dwc:infragenericEpithet ?dwc_infragenericEpithet ;
-      dwc:specificEpithet ?dwc_specificEpithet ;
-      dwc:infraspecificEpithet ?dwc_infraspecificEpithet ;
+      dwc:genericName ?dwc_genericName ;                            # Used by Synospecies
+      dwc:infragenericEpithet ?dwc_infragenericEpithet ;            # Used by Synospecies
+      dwc:specificEpithet ?dwc_specificEpithet ;                    # Used by Synospecies
+      dwc:infraspecificEpithet ?dwc_infraspecificEpithet ;          # Used by Synospecies
       dwc:cultivarEpithet ?dwc_cultivarEpithet ;
       dwc:nameAccordingTo ?dwc_nameAccordingTo ;
       dwc:namePublishedIn ?dwc_namePublishedIn ;
