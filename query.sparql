@@ -11,6 +11,7 @@ CONSTRUCT {
       # dwc:rank ?dwc_taxonRank;
       # dwc:genus ?gbif_genericName;
       # dwc:species ?dwc_specificEpithet;
+      dwc:kingdom ?kingdom ;
 
       ## All tsv columns in order:
       # dwc:taxonID ?dwc_taxonID ;
@@ -40,16 +41,10 @@ CONSTRUCT {
   bind(iri(concat("https://www.catalogueoflife.org/data/taxon/",?dwc_parentNameUsageID)) as ?parent)
   bind(iri(concat("https://www.catalogueoflife.org/data/taxon/",?dwc_acceptedNameUsageID)) as ?acceptedName)
   bind(iri(concat("https://www.catalogueoflife.org/data/taxon/",?dwc_originalNameUsageID)) as ?originalName)
+  ?taxon dwc:acceptedName?/dwc:parent* ?p .
+  ?p dwc:taxonRank "kingdom" ;
+     dwc:scientificName ?full_name .
+  OPTIONAL { ?p dwc:scientificNameAuthorship ?authority . }
+  BIND(REPLACE(?full_name, CONCAT(" ", COALESCE(?authority, ""), "$"), "") AS ?kingdom)
+  # In some cases (8 of 23), the kingdom has an authority. the above should trim it.
 }
-
-# tarql allows multiple CONSTRUCT statements, and allows querying previously constructed triples in them
-CONSTRUCT { ?taxon dwc:kingdom ?kingdom . }
-WHERE {
-  ?taxon dwc:taxonRank "kingdom" ;
-         dwc:scientificName ?kingdom .
-  # OPTIONAL { ?taxon dwc:scientificNameAuthorship ?authority . }
-  # BIND(REPLACE(?full_name, CONCAT(" ", COALESCE(?authority, ""), "$"), "") AS ?kingdom)
-  # # In some cases (8 of 23), the kingdom has an authority. the above should trim it.
-}
-CONSTRUCT { ?taxon dwc:kingdom ?kingdom . }
-WHERE { ?taxon dwc:acceptedName?/dwc:parent*/dwc:kingdom ?kingdom . }
