@@ -46,10 +46,10 @@ CONSTRUCT {
 CONSTRUCT { ?taxon dwc:kingdom ?kingdom . }
 WHERE {
   ?taxon dwc:taxonRank "kingdom" ;
-         dwc:scientificName ?full_name .
-  OPTIONAL { ?taxon dwc:scientificNameAuthorship ?authority . }
-  BIND(REPLACE(?full_name, CONCAT(" ", COALESCE(?authority, ""), "$"), "") AS ?kingdom)
-  # In some cases (8 of 23), the kingdom has an authority. the above should trim it.
+         dwc:scientificName ?kingdom .
+  # OPTIONAL { ?taxon dwc:scientificNameAuthorship ?authority . }
+  # BIND(REPLACE(?full_name, CONCAT(" ", COALESCE(?authority, ""), "$"), "") AS ?kingdom)
+  # # In some cases (8 of 23), the kingdom has an authority. the above should trim it.
 }
 CONSTRUCT { ?taxon dwc:kingdom ?kingdom . }
 WHERE { ?taxon dwc:acceptedName?/dwc:parent*/dwc:kingdom ?kingdom . }
