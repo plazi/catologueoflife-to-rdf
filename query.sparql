@@ -43,8 +43,8 @@ CONSTRUCT {
   bind(iri(concat("https://www.catalogueoflife.org/data/taxon/",?dwc_originalNameUsageID)) as ?originalName)
   ?taxon dwc:acceptedName?/dwc:parent* ?p .
   ?p dwc:taxonRank "kingdom" ;
-     dwc:scientificName ?full_name .
-  OPTIONAL { ?p dwc:scientificNameAuthorship ?authority . }
-  BIND(REPLACE(?full_name, CONCAT(" ", COALESCE(?authority, ""), "$"), "") AS ?kingdom)
-  # In some cases (8 of 23), the kingdom has an authority. the above should trim it.
+     dwc:scientificName ?kingdom .
+  # OPTIONAL { ?p dwc:scientificNameAuthorship ?authority . }
+  # BIND(REPLACE(?full_name, CONCAT(" ", COALESCE(?authority, ""), "$"), "") AS ?kingdom)
+  # # In some cases (8 of 23), the kingdom has an authority. the above should trim it.
 }
