@@ -11,7 +11,6 @@ CONSTRUCT {
       # dwc:rank ?dwc_taxonRank;
       # dwc:genus ?gbif_genericName;
       # dwc:species ?dwc_specificEpithet;
-      dwc:kingdom ?kingdom ;
 
       ## All tsv columns in order:
       # dwc:taxonID ?dwc_taxonID ;
@@ -41,10 +40,4 @@ CONSTRUCT {
   bind(iri(concat("https://www.catalogueoflife.org/data/taxon/",?dwc_parentNameUsageID)) as ?parent)
   bind(iri(concat("https://www.catalogueoflife.org/data/taxon/",?dwc_acceptedNameUsageID)) as ?acceptedName)
   bind(iri(concat("https://www.catalogueoflife.org/data/taxon/",?dwc_originalNameUsageID)) as ?originalName)
-  ?taxon dwc:acceptedName?/dwc:parent* ?p .
-  ?p dwc:taxonRank "kingdom" ;
-     dwc:scientificName ?kingdom .
-  # OPTIONAL { ?p dwc:scientificNameAuthorship ?authority . }
-  # BIND(REPLACE(?full_name, CONCAT(" ", COALESCE(?authority, ""), "$"), "") AS ?kingdom)
-  # # In some cases (8 of 23), the kingdom has an authority. the above should trim it.
 }
