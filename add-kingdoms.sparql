@@ -8,7 +8,7 @@ INSERT {
   OPTIONAL { ?taxon dwc:scientificNameAuthorship ?authority . }
   BIND(REPLACE(?full_name, CONCAT(" ", COALESCE(?authority, ""), "$"), "") AS ?kingdom)
   # In some cases (8 of 23), the kingdom has an authority. the above should trim it.
-}
+};
 
 INSERT {
   ?taxon dwc:kingdom ?kingdom .
