@@ -44,3 +44,11 @@ The result looks like this:
         dwc:rank       "species" ;
         dwc:species    "virescens" .
 ```
+## Adding kingdoms (wip)
+
+roqet \
+  -i sparql \
+  -F turtle \
+  -D col.ttl \
+  kingdom-construct-root.sparql \
+  -r turtle >> col.ttl
