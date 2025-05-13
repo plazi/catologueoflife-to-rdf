@@ -1,6 +1,10 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
 {
-	"name": "tarql",
-	"dockerFile": "./Dockerfile"
-}
+	"name": "Catologueoflife-to-RDF",
+	"build": {
+	  "dockerfile": "Dockerfile",
+	  "context": "."
+	},
+	// Remove any top-level "image": "openjdk:17-jre-slim" entry if present
+	"remoteUser": "vscode"
+  }
+  

@@ -46,9 +46,23 @@ The result looks like this:
 ```
 ## Adding kingdoms (wip)
 
-roqet \
-  -i sparql \
-  -F turtle \
-  -D col.ttl \
-  kingdom-construct-root.sparql \
-  -r turtle >> col.ttl
+tdb2.tdbloader --loc=./tdbstore col.ttl
+tdb2.tdbupdate --loc=./tdbstore --update=add-kingdoms.sparql
+
+cat > all.rq <<'EOF'
+  CONSTRUCT { ?s ?p ?o }
+  WHERE     { ?s ?p ?o }
+EOF
+
+tdb2.tdbquery \
+  --loc=./tdbstore \
+  --query=all.rq \
+  --results=TTL \
+  > col-updated.ttl
+
+Or:
+
+tdb2.tdbdump --loc=./tdbstore | riot --syntax=N-Quads --output=TURTLE > col-updated.ttl
+
+
+rm -rf ./tdbstore
