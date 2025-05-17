@@ -27,10 +27,9 @@ jobs:
           wget -qO /tmp/jena.tar.gz https://dlcdn.apache.org/jena/binaries/apache-jena-${JENA_VERSION}.tar.gz || { echo "Failed to download Jena"; exit 1; }
           sudo mkdir -p /opt/jena
           sudo tar xzf /tmp/jena.tar.gz -C /opt/jena --strip-components=1 || { echo "Failed to extract Jena"; exit 1; }
-          ls -l /tmp/jena.tar.gz
+          rm /tmp/jena.tar.gz
           sudo apt-get clean
           sudo rm -rf /var/lib/apt/lists/*
-          ls -l /opt/jena
           
       - name: Get and convert
         run: |
