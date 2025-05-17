@@ -5,7 +5,8 @@ on: workflow_dispatch
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    env:
+      PATH: "/opt/jena/bin:${{ env.PATH }}" # Add Jena to PATH globally
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout
@@ -29,8 +30,6 @@ jobs:
           rm /tmp/jena.tar.gz && \
           sudo apt-get clean
           sudo rm -rf /var/lib/apt/lists/*
-          export PATH="/opt/jena/bin:${PATH}"
-
           
       - name: Get and convert
         run: |
