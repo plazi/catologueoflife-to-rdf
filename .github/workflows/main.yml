@@ -29,6 +29,7 @@ jobs:
           rm /tmp/jena.tar.gz && \
           sudo apt-get clean
           sudo rm -rf /var/lib/apt/lists/*
+          export PATH="/opt/jena/bin:${PATH}"
 
           
       - name: Get and convert
