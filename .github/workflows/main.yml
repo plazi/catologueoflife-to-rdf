@@ -5,6 +5,8 @@ on: workflow_dispatch
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      JENA_VERSION: 5.4.0
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
