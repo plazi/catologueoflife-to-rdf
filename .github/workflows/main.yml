@@ -5,8 +5,7 @@ on: workflow_dispatch
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      PATH: "/opt/jena/bin:${{ env.PATH }}" # Add Jena to PATH globally
+
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout
@@ -36,6 +35,8 @@ jobs:
           wget "https://api.checklistbank.org/dataset/3LR/export.zip?format=DwCA&extended=true" -O dwca.zip
           unzip dwca.zip Taxon.tsv
           tarql --ntriples --tabs query.sparql Taxon.tsv > col.nt
+          
+          export PATH="/opt/jena/bin:${PATH}"
           
           tdb2.tdbloader --loc=./tdbstore col.ttl
           tdb2.tdbupdate --loc=./tdbstore --update=add-kingdoms.sparql
