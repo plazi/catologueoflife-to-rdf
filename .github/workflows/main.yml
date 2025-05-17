@@ -10,21 +10,38 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout
         uses: actions/checkout@v2
-
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin' # See 'Supported distributions' for available options
+          java-version: '21'
       - name: Install dependencies
         run: |
           sudo apt update
-          DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC sudo apt-get -y install default-jre wget
+          DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC sudo apt-get -y install wget
           wget https://github.com/tarql/tarql/releases/download/v1.2/tarql-1.2.tar.gz -O /tmp/tarql-1.2.tar.gz
           cd /usr/local/lib/ && sudo tar xzf /tmp/tarql-1.2.tar.gz && rm /tmp/tarql-1.2.tar.gz
           sudo chmod a+x /usr/local/lib/tarql-1.2/bin/tarql
           sudo ln -s /usr/local/lib/tarql-1.2/bin/tarql /usr/local/bin/
+          apt-get install -y --no-install-recommends wget ca-certificates && \
+          wget -qO /tmp/jena.tar.gz \
+            https://dlcdn.apache.org/jena/binaries/apache-jena-${JENA_VERSION}.tar.gz && \
+          mkdir -p /opt/jena && \
+          tar xzf /tmp/jena.tar.gz -C /opt/jena --strip-components=1 && \
+          rm /tmp/jena.tar.gz && \
+          apt-get clean && rm -rf /var/lib/apt/lists/*
+
           
       - name: Get and convert
         run: |
           wget "https://api.checklistbank.org/dataset/3LR/export.zip?format=DwCA&extended=true" -O dwca.zip
           unzip dwca.zip Taxon.tsv
           tarql --ntriples --tabs query.sparql Taxon.tsv > col.nt
+          
+          tdb2.tdbloader --loc=./tdbstore col.ttl
+          tdb2.tdbupdate --loc=./tdbstore --update=add-kingdoms.sparql
+
+          tdb2.tdbdump --loc=./tdbstore | > col.nt
+
           gzip -k col.nt
   
       # Using `tarql --ntriples` to emit ntriples directly.
