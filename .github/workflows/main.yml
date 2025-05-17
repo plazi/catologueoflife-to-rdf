@@ -18,7 +18,7 @@ jobs:
         run: |
           sudo apt update
           DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC sudo apt-get -y install --no-install-recommends wget ca-certificates
-          wget https://github.com/tarql/tarql/releases/download/v1.2/tarql-1.2.tar.gz -O /tmp/tarql-1.2.tar.gz
+          wget -q https://github.com/tarql/tarql/releases/download/v1.2/tarql-1.2.tar.gz -O /tmp/tarql-1.2.tar.gz
           cd /usr/local/lib/ && sudo tar xzf /tmp/tarql-1.2.tar.gz && rm /tmp/tarql-1.2.tar.gz
           sudo chmod a+x /usr/local/lib/tarql-1.2/bin/tarql
           sudo ln -s /usr/local/lib/tarql-1.2/bin/tarql /usr/local/bin/
@@ -29,10 +29,11 @@ jobs:
           rm /tmp/jena.tar.gz && \
           sudo apt-get clean
           sudo rm -rf /var/lib/apt/lists/*
+          ls -l /opt/jena/bin
           
       - name: Get and convert
         run: |
-          wget "https://api.checklistbank.org/dataset/3LR/export.zip?format=DwCA&extended=true" -O dwca.zip
+          wget -q "https://api.checklistbank.org/dataset/3LR/export.zip?format=DwCA&extended=true" -O dwca.zip
           unzip dwca.zip Taxon.tsv
           tarql --ntriples --tabs query.sparql Taxon.tsv > col.nt
           
