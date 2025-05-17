@@ -18,13 +18,13 @@ jobs:
         run: |
           sudo apt update
           DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC sudo apt-get -y install --no-install-recommends wget ca-certificates
-          wget -q https://github.com/tarql/tarql/releases/download/v1.2/tarql-1.2.tar.gz -O /tmp/tarql-1.2.tar.gz
+          wget -q https://github.com/tarql/tarql/releases/download/v1.2/tarql-1.2.tar.gz -O /tmp/tarql-1.2.tar.gz || { echo "Failed to download Tarql"; exit 1; }
           cd /usr/local/lib/ && sudo tar xzf /tmp/tarql-1.2.tar.gz && rm /tmp/tarql-1.2.tar.gz
           sudo chmod a+x /usr/local/lib/tarql-1.2/bin/tarql
           sudo ln -s /usr/local/lib/tarql-1.2/bin/tarql /usr/local/bin/
-          wget -qO /tmp/jena.tar.gz https://dlcdn.apache.org/jena/binaries/apache-jena-${JENA_VERSION}.tar.gz
+          wget -qO /tmp/jena.tar.gz https://dlcdn.apache.org/jena/binaries/apache-jena-${JENA_VERSION}.tar.gz || { echo "Failed to download Jena"; exit 1; }
           sudo mkdir -p /opt/jena
-          sudo tar xzf /tmp/jena.tar.gz -C /opt/jena --strip-components=1
+          sudo tar xzf /tmp/jena.tar.gz -C /opt/jena --strip-components=1 || { echo "Failed to extract Jena"; exit 1; }
           ls -l /tmp/jena.tar.gz
           sudo apt-get clean
           sudo rm -rf /var/lib/apt/lists/*
