@@ -39,7 +39,7 @@ jobs:
           
           export PATH="/opt/jena/bin:${PATH}"
           
-          /opt/jena/bin/tdb2.tdbloader --loc=./tdbstore col.ttl
+          /opt/jena/bin/tdb2.tdbloader --loc=./tdbstore col.nt
           /opt/jena/bin/tdb2.tdbupdate --loc=./tdbstore --update=add-kingdoms.sparql
 
           /opt/jena/bin/tdb2.tdbdump --loc=./tdbstore | > col.nt
