@@ -32,17 +32,19 @@ jobs:
           sudo rm -rf /var/lib/apt/lists/*
           
       - name: Get and convert
+        env:
+          JAVA_OPTS: -Xmx4G
         run: |
           wget -q "https://api.checklistbank.org/dataset/3LR/export.zip?format=DwCA&extended=true" -O dwca.zip
           unzip dwca.zip Taxon.tsv
           tarql --ntriples --tabs query.sparql Taxon.tsv > col.nt
-          
-          export PATH="/opt/jena/bin:${PATH}"
-          
-          tdb2.tdbloader --loc=./tdbstore --mem=4G col.nt
-          tdb2.tdbupdate --loc=./tdbstore --mem=4G --update=add-kingdoms.sparql
 
-          tdb2.tdbdump --loc=./tdbstore --mem=4G | > col.nt
+          export PATH="/opt/jena/bin:${PATH}"
+
+          tdb2.tdbloader --loc=./tdbstore col.nt
+          tdb2.tdbupdate --loc=./tdbstore --update=add-kingdoms.sparql
+
+          tdb2.tdbdump --loc=./tdbstore > col.nt
 
           gzip -k col.nt
   
