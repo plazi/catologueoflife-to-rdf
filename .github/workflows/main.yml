@@ -39,10 +39,10 @@ jobs:
           
           export PATH="/opt/jena/bin:${PATH}"
           
-          /opt/jena/bin/tdb2.tdbloader --loc=./tdbstore col.nt
-          /opt/jena/bin/tdb2.tdbupdate --loc=./tdbstore --update=add-kingdoms.sparql
+          tdb2.tdbloader --loc=./tdbstore --mem=4G col.nt
+          tdb2.tdbupdate --loc=./tdbstore --mem=4G --update=add-kingdoms.sparql
 
-          /opt/jena/bin/tdb2.tdbdump --loc=./tdbstore | > col.nt
+          tdb2.tdbdump --loc=./tdbstore --mem=4G | > col.nt
 
           gzip -k col.nt
   
