@@ -51,10 +51,15 @@ jobs:
       # Using `tarql --ntriples` to emit ntriples directly.
       # This is a workaround to our lindas-upload-cronjob failing to convert a ttl file this large using rapper.
       # (It fails with an inexplicable `unexpected $end` in the middle of the file)
-          
+
+      - name: Set tag as date
+        id: set_tag
+        run: echo "tag=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           files: ${{ github.workspace }}/col.nt.gz
           generate_release_notes: true
-          tag_name: ${{ github.ref_name }}
+          tag_name: ${{ steps.set_tag.outputs.tag }} 
+      
