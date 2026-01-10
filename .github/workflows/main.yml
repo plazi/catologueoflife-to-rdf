@@ -10,8 +10,10 @@ jobs:
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: Checkout
+      - name: Checkout (shallow)
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin' # See 'Supported distributions' for available options
@@ -37,7 +39,9 @@ jobs:
         run: |
           wget -q "https://api.checklistbank.org/dataset/3LR/export.zip?format=DwCA&extended=true" -O dwca.zip
           unzip dwca.zip Taxon.tsv
+          rm dwca.zip
           tarql --ntriples --tabs query.sparql Taxon.tsv > col.nt
+          rm Taxon.tsv
 
           export PATH="/opt/jena/bin:${PATH}"
 
@@ -46,7 +50,12 @@ jobs:
 
           tdb2.tdbdump --loc=./tdbstore > col.nt
 
+          # Remove tdbstore to save space
+          rm -rf ./tdbstore
+
           gzip -k col.nt
+          # Remove uncompressed col.nt to save space
+          rm col.nt
   
       # Using `tarql --ntriples` to emit ntriples directly.
       # This is a workaround to our lindas-upload-cronjob failing to convert a ttl file this large using rapper.
