@@ -37,7 +37,7 @@ jobs:
         env:
           JVM_ARGS: -Xmx8G
         run: |
-          wget -q "https://api.checklistbank.org/dataset/3LR/export.zip?format=DwCA&extended=true" -O dwca.zip
+          wget -q "https://api.checklistbank.org/dataset/3LXR/export.zip?format=DwCA&extended=true" -O dwca.zip
           unzip dwca.zip Taxon.tsv
           rm dwca.zip
           tarql --ntriples --tabs query.sparql Taxon.tsv > col.nt
