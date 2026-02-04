@@ -26,7 +26,7 @@ jobs:
           cd /usr/local/lib/ && sudo tar xzf /tmp/tarql-1.2.tar.gz && rm /tmp/tarql-1.2.tar.gz
           sudo chmod a+x /usr/local/lib/tarql-1.2/bin/tarql
           sudo ln -s /usr/local/lib/tarql-1.2/bin/tarql /usr/local/bin/
-          wget -qO /tmp/jena.tar.gz https://dlcdn.apache.org/jena/binaries/apache-jena-${JENA_VERSION}.tar.gz || { echo "Failed to download Jena"; exit 1; }
+          wget -qO /tmp/jena.tar.gz https://archive.apache.org/dist/jena/binaries/apache-jena-${JENA_VERSION}.tar.gz || { echo "Failed to download Jena"; exit 1; }
           sudo mkdir -p /opt/jena
           sudo tar xzf /tmp/jena.tar.gz -C /opt/jena --strip-components=1 || { echo "Failed to extract Jena"; exit 1; }
           rm /tmp/jena.tar.gz
