@@ -13,5 +13,62 @@ INSERT {
 INSERT {
   ?taxon dwc:kingdom ?kingdom .
 } WHERE {
+  ?taxon dwc:acceptedName?/dwc:parent ?parent .
+  ?parent dwc:kingdom ?kingdom .
+  FILTER NOT EXISTS { ?taxon dwc:kingdom ?any }
+};
+
+INSERT {
+  ?taxon dwc:kingdom ?kingdom .
+} WHERE {
+  ?taxon dwc:acceptedName?/dwc:parent ?parent .
+  ?parent dwc:kingdom ?kingdom .
+  FILTER NOT EXISTS { ?taxon dwc:kingdom ?any }
+};
+
+INSERT {
+  ?taxon dwc:kingdom ?kingdom .
+} WHERE {
+  ?taxon dwc:acceptedName?/dwc:parent ?parent .
+  ?parent dwc:kingdom ?kingdom .
+  FILTER NOT EXISTS { ?taxon dwc:kingdom ?any }
+};
+
+INSERT {
+  ?taxon dwc:kingdom ?kingdom .
+} WHERE {
+  ?taxon dwc:acceptedName?/dwc:parent ?parent .
+  ?parent dwc:kingdom ?kingdom .
+  FILTER NOT EXISTS { ?taxon dwc:kingdom ?any }
+};
+
+INSERT {
+  ?taxon dwc:kingdom ?kingdom .
+} WHERE {
+  ?taxon dwc:acceptedName?/dwc:parent ?parent .
+  ?parent dwc:kingdom ?kingdom .
+  FILTER NOT EXISTS { ?taxon dwc:kingdom ?any }
+};
+
+INSERT {
+  ?taxon dwc:kingdom ?kingdom .
+} WHERE {
+  ?taxon dwc:acceptedName?/dwc:parent ?parent .
+  ?parent dwc:kingdom ?kingdom .
+  FILTER NOT EXISTS { ?taxon dwc:kingdom ?any }
+};
+
+INSERT {
+  ?taxon dwc:kingdom ?kingdom .
+} WHERE {
+  ?taxon dwc:acceptedName?/dwc:parent ?parent .
+  ?parent dwc:kingdom ?kingdom .
+  FILTER NOT EXISTS { ?taxon dwc:kingdom ?any }
+};
+
+INSERT {
+  ?taxon dwc:kingdom ?kingdom .
+} WHERE {
   ?taxon dwc:acceptedName?/dwc:parent*/dwc:kingdom ?kingdom .
+  FILTER NOT EXISTS { ?taxon dwc:kingdom ?any }
 }
