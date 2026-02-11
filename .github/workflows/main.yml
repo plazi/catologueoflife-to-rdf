@@ -35,7 +35,7 @@ jobs:
           
       - name: Get and convert
         env:
-          JVM_ARGS: -Xmx6G
+          JVM_ARGS: -Xmx5G -XX:+UseG1GC -XX:MaxGCPauseMillis=200
         run: |
           wget -q "https://api.checklistbank.org/dataset/3LXR/export.zip?format=DwCA&extended=true" -O dwca.zip
           unzip dwca.zip Taxon.tsv
