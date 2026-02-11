@@ -46,16 +46,13 @@ jobs:
           export PATH="/opt/jena/bin:${PATH}"
 
           tdb2.tdbloader --loc=./tdbstore col.nt
+          rm col.nt
           tdb2.tdbupdate --loc=./tdbstore --update=add-kingdoms.sparql
 
-          tdb2.tdbdump --loc=./tdbstore > col.nt
+          tdb2.tdbdump --loc=./tdbstore | gzip > col.nt.gz
 
           # Remove tdbstore to save space
           rm -rf ./tdbstore
-
-          gzip -k col.nt
-          # Remove uncompressed col.nt to save space
-          rm col.nt
   
       # Using `tarql --ntriples` to emit ntriples directly.
       # This is a workaround to our lindas-upload-cronjob failing to convert a ttl file this large using rapper.
