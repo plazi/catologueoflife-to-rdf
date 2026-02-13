@@ -51,7 +51,7 @@ jobs:
           echo "Running add-kingdoms-root.sparql"
           tdb2.tdbupdate --loc=./tdbstore --update=add-kingdoms-root.sparql
 
-          for i in {1..6}; do
+          for i in {1..9}; do
             echo "Running propagate-kingdoms.sparql (iteration $i)"
             tdb2.tdbupdate --loc=./tdbstore --update=propagate-kingdoms.sparql
           done
