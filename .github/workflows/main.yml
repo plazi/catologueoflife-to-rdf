@@ -47,7 +47,17 @@ jobs:
 
           tdb2.tdbloader --loc=./tdbstore col.nt
           rm col.nt
-          tdb2.tdbupdate --loc=./tdbstore --update=add-kingdoms.sparql
+
+          echo "Running add-kingdoms-root.sparql"
+          tdb2.tdbupdate --loc=./tdbstore --update=add-kingdoms-root.sparql
+
+          for i in {1..6}; do
+            echo "Running propagate-kingdoms.sparql (iteration $i)"
+            tdb2.tdbupdate --loc=./tdbstore --update=propagate-kingdoms.sparql
+          done
+
+          echo "Running propagate-kingdoms-acceptedname.sparql"
+          tdb2.tdbupdate --loc=./tdbstore --update=propagate-kingdoms-acceptedname.sparql
 
           tdb2.tdbdump --loc=./tdbstore | gzip > col.nt.gz
 

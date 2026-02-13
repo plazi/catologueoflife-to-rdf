@@ -1,0 +1,10 @@
+PREFIX dwc: <http://rs.tdwg.org/dwc/terms/>
+
+INSERT {
+  ?taxon dwc:kingdom ?kingdom .
+} WHERE {
+  ?taxon dwc:acceptedName ?an .
+  ?an dwc:kingdom ?kingdom .
+  FILTER NOT EXISTS { ?taxon dwc:kingdom ?any }
+};
+
