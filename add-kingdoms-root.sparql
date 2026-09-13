@@ -6,6 +6,10 @@ INSERT {
   ?taxon dwc:taxonRank "kingdom" ;
          dwc:scientificName ?full_name .
   OPTIONAL { ?taxon dwc:scientificNameAuthorship ?authority . }
-  BIND(REPLACE(?full_name, CONCAT(" ", COALESCE(?authority, ""), "$"), "") AS ?kingdom)
-  # In some cases (8 of 23), the kingdom has an authority. the above should trim it.
+  # Some kingdoms have an authority, which has to be trimmed. It is removed as a plain
+  # suffix: authorities such as "(Garrity & Holt, 2023) Oren & Göker 2024" contain
+  # regex metacharacters, so they cannot be used as a REPLACE pattern.
+  BIND(IF(BOUND(?authority) && STRENDS(?full_name, CONCAT(" ", ?authority)),
+          SUBSTR(?full_name, 1, STRLEN(?full_name) - STRLEN(?authority) - 1),
+          ?full_name) AS ?kingdom)
 };

@@ -1,27 +1,68 @@
 name: col
 
-on: workflow_dispatch 
+# Publishes every Catalogue of Life Extended Release once, as a full snapshot and a
+# triple patch against the previous release. The assets form a contract with
+# consumers, documented under "Release contract" in README.md.
+
+on:
+  schedule:
+    - cron: '23 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: col-release
 
 jobs:
-  build:
+  check:
     runs-on: ubuntu-latest
+    outputs:
+      build: ${{ steps.lookup.outputs.build }}
+      tag: ${{ steps.lookup.outputs.tag }}
+      from: ${{ steps.lookup.outputs.from }}
+      key: ${{ steps.lookup.outputs.key }}
+      attempt: ${{ steps.lookup.outputs.attempt }}
+      alias: ${{ steps.lookup.outputs.alias }}
+      doi: ${{ steps.lookup.outputs.doi }}
+    steps:
+      - name: Checkout (shallow)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Look up the current Extended Release
+        id: lookup
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: scripts/lookup-release.sh 3LXR >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: check
+    if: needs.check.outputs.build == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
     env:
       JENA_VERSION: 5.6.0
+      JVM_ARGS: -Xmx5G -XX:+UseG1GC -XX:MaxGCPauseMillis=200
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ needs.check.outputs.tag }}
+      FROM: ${{ needs.check.outputs.from }}
+      KEY: ${{ needs.check.outputs.key }}
 
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout (shallow)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
       - uses: actions/setup-java@v4
         with:
-          distribution: 'temurin' # See 'Supported distributions' for available options
+          distribution: 'temurin'
           java-version: '21'
       - name: Install dependencies
         run: |
-          sudo apt update
-          DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC sudo apt-get -y install --no-install-recommends wget ca-certificates
+          sudo apt-get update
+          DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC sudo apt-get -y install --no-install-recommends wget ca-certificates zstd jq
           wget -q https://github.com/tarql/tarql/releases/download/v1.2/tarql-1.2.tar.gz -O /tmp/tarql-1.2.tar.gz || { echo "Failed to download Tarql"; exit 1; }
           cd /usr/local/lib/ && sudo tar xzf /tmp/tarql-1.2.tar.gz && rm /tmp/tarql-1.2.tar.gz
           sudo chmod a+x /usr/local/lib/tarql-1.2/bin/tarql
@@ -32,50 +73,56 @@ jobs:
           rm /tmp/jena.tar.gz
           sudo apt-get clean
           sudo rm -rf /var/lib/apt/lists/*
-          
-      - name: Get and convert
-        env:
-          JVM_ARGS: -Xmx5G -XX:+UseG1GC -XX:MaxGCPauseMillis=200
+          echo /opt/jena/bin >> "$GITHUB_PATH"
+          df -h
+
+      - name: Download the export of ${{ needs.check.outputs.alias }}
+        run: scripts/download-export.sh "$KEY" "$TAG"
+
+      - name: Convert
         run: |
-          wget -q "https://api.checklistbank.org/dataset/3LXR/export.zip?format=DwCA&extended=true" -O dwca.zip
-          unzip dwca.zip Taxon.tsv
-          rm dwca.zip
-          tarql --ntriples --tabs query.sparql Taxon.tsv > col.nt
+          scripts/convert.sh Taxon.tsv "$TAG" snapshot.nt.zst
           rm Taxon.tsv
+          df -h .
 
-          export PATH="/opt/jena/bin:${PATH}"
+      - name: Check the snapshot
+        run: scripts/check-snapshot.sh snapshot.nt.zst "$TAG"
 
-          tdb2.tdbloader --loc=./tdbstore col.nt
-          rm col.nt
+      - name: Compute the patch from ${{ needs.check.outputs.from }}
+        if: env.FROM != ''
+        run: |
+          gh release download "$FROM" --pattern col.ttl.gz --output previous.ttl.gz
+          gzip -dc previous.ttl.gz | scripts/canonicalise.sh previous.nt.zst
+          rm previous.ttl.gz
+          scripts/make-patch.sh previous.nt.zst snapshot.nt.zst "$FROM" "$TAG" release
+          rm previous.nt.zst
 
-          echo "Running add-kingdoms-root.sparql"
-          tdb2.tdbupdate --loc=./tdbstore --update=add-kingdoms-root.sparql
+      - name: Compress the snapshot
+        run: |
+          mkdir -p release
+          zstd -dc snapshot.nt.zst | gzip -6 > release/col.ttl.gz
+          rm snapshot.nt.zst
 
-          for i in {1..9}; do
-            echo "Running propagate-kingdoms.sparql (iteration $i)"
-            tdb2.tdbupdate --loc=./tdbstore --update=propagate-kingdoms.sparql
-          done
+      # The release stays a draft until every asset is uploaded, so that consumers
+      # polling the releases API never see a partial release.
+      - name: Publish
+        env:
+          ALIAS: ${{ needs.check.outputs.alias }}
+          ATTEMPT: ${{ needs.check.outputs.attempt }}
+          DOI: ${{ needs.check.outputs.doi }}
+        run: |
+          if [[ -n $FROM ]]; then
+            patch="Patch from $FROM: $(jq -r '"\(.removed) triples removed, \(.added) added"' release/col-patch.json)."
+          else
+            patch="First release with a version marker: snapshot only, no patch."
+          fi
+          notes="Catalogue of Life $ALIAS, ChecklistBank dataset $KEY (import attempt $ATTEMPT), https://doi.org/$DOI
 
-          echo "Running propagate-kingdoms-acceptedname.sparql"
-          tdb2.tdbupdate --loc=./tdbstore --update=propagate-kingdoms-acceptedname.sparql
-
-          tdb2.tdbdump --loc=./tdbstore | gzip > col.nt.gz
-
-          # Remove tdbstore to save space
-          rm -rf ./tdbstore
-  
-      # Using `tarql --ntriples` to emit ntriples directly.
-      # This is a workaround to our lindas-upload-cronjob failing to convert a ttl file this large using rapper.
-      # (It fails with an inexplicable `unexpected $end` in the middle of the file)
-
-      - name: Set tag as date
-        id: set_tag
-        run: echo "tag=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
-
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: ${{ github.workspace }}/col.nt.gz
-          generate_release_notes: true
-          tag_name: ${{ steps.set_tag.outputs.tag }} 
-      
+          $patch"
+          # An earlier run may have failed after creating the draft.
+          if [[ $(gh release view "$TAG" --json isDraft --jq .isDraft 2>/dev/null) == true ]]; then
+            gh release delete "$TAG" --yes
+          fi
+          gh release create "$TAG" release/* --draft --target "$GITHUB_SHA" \
+            --title "Catalogue of Life $TAG" --notes "$notes"
+          gh release edit "$TAG" --draft=false

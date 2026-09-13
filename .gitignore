@@ -5,4 +5,9 @@
 /tarql-1.2
 /taxon-sample.tsv
 /dwca.zip
+/eml.xml
 /tdbstore
+/snapshot.nt.zst
+/previous.nt.zst
+/previous.ttl.gz
+/release
