@@ -18,8 +18,11 @@ RUN ln -s /usr/local/lib/tarql-1.2/bin/tarql /usr/local/bin/
 # Install wget (for download) and unpack Jena into /opt/jena
 RUN apt-get update && \
     apt-get install -y --no-install-recommends wget ca-certificates && \
-    wget -qO /tmp/jena.tar.gz \
-      https://dlcdn.apache.org/jena/binaries/apache-jena-${JENA_VERSION}.tar.gz && \
+    # dlcdn only hosts the current release; older versions live in the archive
+    (wget -qO /tmp/jena.tar.gz \
+      https://dlcdn.apache.org/jena/binaries/apache-jena-${JENA_VERSION}.tar.gz || \
+     wget -qO /tmp/jena.tar.gz \
+      https://archive.apache.org/dist/jena/binaries/apache-jena-${JENA_VERSION}.tar.gz) && \
     mkdir -p /opt/jena && \
     tar xzf /tmp/jena.tar.gz -C /opt/jena --strip-components=1 && \
     rm /tmp/jena.tar.gz && \
