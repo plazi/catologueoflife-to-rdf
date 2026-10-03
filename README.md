@@ -12,7 +12,7 @@ The source is the **Catalogue of Life Extended Release** (ChecklistBank dataset 
 
 The [workflow](.github/workflows/main.yml) runs daily. It looks up the current Extended Release (`GET https://api.checklistbank.org/dataset/3LXR`) and, if no release here carries its `issued` date as tag yet, it:
 
-1. downloads the export of that release by its numeric dataset key and checks that the export's publication date matches;
+1. downloads the DwC-A of that release from COL's monthly downloads (`https://download.checklistbank.org/col/monthly/<issued>_xr_dwca.zip`), falling back to the API export by its numeric dataset key, and checks that the export's publication date matches;
 2. maps `Taxon.tsv` to RDF with [tarql](https://tarql.github.io/) and [query.sparql](query.sparql) ([scripts/convert.sh](scripts/convert.sh));
 3. derives `dwc:kingdom` in a TDB2 store: [add-kingdoms-root.sparql](add-kingdoms-root.sparql) sets it on the taxa of rank kingdom, [propagate-kingdoms.sparql](propagate-kingdoms.sparql) is repeated until no taxon below them gains one, and [propagate-kingdoms-acceptedname.sparql](propagate-kingdoms-acceptedname.sparql) passes it on to synonyms;
 4. adds the version marker, canonicalises the snapshot ([scripts/canonicalise.sh](scripts/canonicalise.sh)) and checks it ([scripts/check-snapshot.sh](scripts/check-snapshot.sh));
