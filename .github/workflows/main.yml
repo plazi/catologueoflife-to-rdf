@@ -23,6 +23,7 @@ jobs:
       tag: ${{ steps.lookup.outputs.tag }}
       from: ${{ steps.lookup.outputs.from }}
       key: ${{ steps.lookup.outputs.key }}
+      url: ${{ steps.lookup.outputs.url }}
       attempt: ${{ steps.lookup.outputs.attempt }}
       alias: ${{ steps.lookup.outputs.alias }}
       doi: ${{ steps.lookup.outputs.doi }}
@@ -49,6 +50,7 @@ jobs:
       TAG: ${{ needs.check.outputs.tag }}
       FROM: ${{ needs.check.outputs.from }}
       KEY: ${{ needs.check.outputs.key }}
+      URL: ${{ needs.check.outputs.url }}
 
     steps:
       - name: Checkout (shallow)
@@ -77,7 +79,7 @@ jobs:
           df -h
 
       - name: Download the export of ${{ needs.check.outputs.alias }}
-        run: scripts/download-export.sh "$KEY" "$TAG"
+        run: scripts/download-export.sh "$URL" "$TAG"
 
       - name: Convert
         run: |

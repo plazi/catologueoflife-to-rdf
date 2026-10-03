@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # Decides whether the current ChecklistBank release still has to be published here.
 # Prints key=value lines for $GITHUB_OUTPUT:
-#   build    true if a release has to be built
+#   build    true if a release has to be built and COL's download of it is available
 #   tag      the release's issued date, used as the tag
 #   from     tag of the previous release with a snapshot, empty for the first one
+#   url      COL's DwC-A download of the release
 #   key, attempt, alias, doi   ChecklistBank metadata of the release
 #
 # Usage: scripts/lookup-release.sh [DATASET]   (needs GH_TOKEN and GITHUB_REPOSITORY)
@@ -42,6 +43,14 @@ from=$(jq -r --arg tag "$tag" 'map(select(. < $tag)) | max // ""' <<<"$published
 newer=$(jq -r --arg tag "$tag" 'map(select(. > $tag)) | max // ""' <<<"$published")
 [[ -z $newer ]] || fail "ChecklistBank's $dataset ($tag) is older than the published release $newer"
 
+# COL publishes the DwC-A of a release only some days after it is issued (see
+# "Download delay" in README.md); until then there is nothing to build.
+url="https://download.checklistbank.org/col/monthly/${tag}_xr_dwca.zip"
+if [[ $build == true ]] && ! curl -fsSI --retry 3 -o /dev/null "$url"; then
+  echo "::notice::$url is not published yet, nothing to build" >&2
+  build=false
+fi
+
 echo "ChecklistBank $dataset: key $key, issued $tag; build=$build, from=${from:-none}" >&2
-printf 'build=%s\ntag=%s\nfrom=%s\nkey=%s\n' "$build" "$tag" "$from" "$key"
+printf 'build=%s\ntag=%s\nfrom=%s\nkey=%s\nurl=%s\n' "$build" "$tag" "$from" "$key" "$url"
 printf 'attempt=%s\nalias=%s\ndoi=%s\n' "$(jq -r .attempt <<<"$meta")" "$(jq -r .alias <<<"$meta")" "$(jq -r .doi <<<"$meta")"

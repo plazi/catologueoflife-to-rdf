@@ -10,14 +10,25 @@ The source is the **Catalogue of Life Extended Release** (ChecklistBank dataset 
 
 ## Releases
 
-The [workflow](.github/workflows/main.yml) runs daily. It looks up the current Extended Release (`GET https://api.checklistbank.org/dataset/3LXR`) and, if no release here carries its `issued` date as tag yet, it:
+The [workflow](.github/workflows/main.yml) runs daily. It looks up the current Extended Release (`GET https://api.checklistbank.org/dataset/3LXR`) and, if no release here carries its `issued` date as tag yet and COL has already published its DwC-A at `https://download.checklistbank.org/col/monthly/<issued>_xr_dwca.zip`, it:
 
-1. downloads the DwC-A of that release from COL's monthly downloads (`https://download.checklistbank.org/col/monthly/<issued>_xr_dwca.zip`), falling back to the API export by its numeric dataset key, and checks that the export's publication date matches;
+1. downloads that DwC-A and checks that the export's publication date matches;
 2. maps `Taxon.tsv` to RDF with [tarql](https://tarql.github.io/) and [query.sparql](query.sparql) ([scripts/convert.sh](scripts/convert.sh));
 3. derives `dwc:kingdom` in a TDB2 store: [add-kingdoms-root.sparql](add-kingdoms-root.sparql) sets it on the taxa of rank kingdom, [propagate-kingdoms.sparql](propagate-kingdoms.sparql) is repeated until no taxon below them gains one, and [propagate-kingdoms-acceptedname.sparql](propagate-kingdoms-acceptedname.sparql) passes it on to synonyms;
 4. adds the version marker, canonicalises the snapshot ([scripts/canonicalise.sh](scripts/canonicalise.sh)) and checks it ([scripts/check-snapshot.sh](scripts/check-snapshot.sh));
 5. computes and verifies the patch against the previous release ([scripts/make-patch.sh](scripts/make-patch.sh));
 6. publishes a release with the assets described below.
+
+### Download delay
+
+COL publishes the DwC-A of an Extended Release under `download.checklistbank.org/col/monthly/` only some days after the release is issued: COL26.8 XR (issued 2026-08-26) appeared there on 2026-09-01, COL26.9 XR (issued 2026-09-25) on 2026-09-29. Until the file is there, the `check` job finds nothing to build and the run succeeds without a `build` job. A release here therefore follows the Catalogue of Life by roughly 4–6 days.
+
+The ChecklistBank API is no shortcut as it stands: `GET /dataset/<key>/export.zip` only serves an export that somebody has already requested and answers 404 otherwise, without starting one. To remove the delay, the workflow could request the export itself on the day of the release:
+
+1. `POST https://api.checklistbank.org/dataset/<key>/export` with HTTP basic authentication (a GBIF account, ideally a dedicated service account stored as a repository secret) and the body `{"format": "DwCA", "extended": true, "synonyms": true, "bareNames": false}`; the response is a job id.
+2. Poll `GET https://api.checklistbank.org/export/<id>` until `status` is `finished` (a full export of COL26.8 XR took about 85 minutes in September 2026), then download the zip named in `download`.
+
+The request options must reproduce the published file — notably `synonyms`: a COL26.8 XR export requested without them was 406 MB instead of 686 MB — so that a release built from a requested export has the same content as one built from COL's download. Compare the two once (same `Taxon.tsv` header and row count) before switching.
 
 ## Release contract
 
